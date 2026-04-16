@@ -424,9 +424,13 @@
         .hero-image img {
             width: 100%;
             height: auto;
-            filter: drop-shadow(0 40px 80px rgba(0,0,0,0.3));
-            mask-image: radial-gradient(ellipse 85% 85% at center, black 40%, transparent 75%);
-            -webkit-mask-image: radial-gradient(ellipse 85% 85% at center, black 40%, transparent 75%);
+            border-radius: 20px;
+            filter: drop-shadow(0 40px 80px rgba(0,0,0,0.4));
+            mask-image: linear-gradient(to right, transparent 0%, black 10%, black 90%, transparent 100%),
+                        linear-gradient(to bottom, transparent 0%, black 10%, black 90%, transparent 100%);
+            mask-composite: intersect;
+            -webkit-mask-image: linear-gradient(to right, transparent 0%, black 10%, black 90%, transparent 100%);
+            -webkit-mask-composite: source-in;
         }
 
         /* MARQUEE */
@@ -1903,9 +1907,11 @@
             </div>
 
             <div class="filter-pills">
-                <button class="filter-pill active" data-filter="all">All</button>
+                <button class="filter-pill active" data-filter="all">All Products</button>
+                <button class="filter-pill" data-filter="standard">Standard ₹60</button>
+                <button class="filter-pill" data-filter="premium">Premium ₹75</button>
                 <button class="filter-pill" data-filter="animals">Animals</button>
-                <button class="filter-pill" data-filter="sea">Sea</button>
+                <button class="filter-pill" data-filter="sea">Sea Creatures</button>
                 <button class="filter-pill" data-filter="anime">Anime</button>
                 <button class="filter-pill" data-filter="characters">Characters</button>
             </div>
@@ -2495,17 +2501,24 @@
             const grid = document.getElementById('productsGrid');
             grid.innerHTML = '';
 
-            const filtered = currentFilter === 'all' 
-                ? products 
-                : products.filter(p => p.category === currentFilter);
+            let filtered;
+            if (currentFilter === 'all') {
+                filtered = products;
+            } else if (currentFilter === 'standard') {
+                filtered = products.filter(p => p.wholesale === 60);
+            } else if (currentFilter === 'premium') {
+                filtered = products.filter(p => p.wholesale === 75);
+            } else {
+                filtered = products.filter(p => p.category === currentFilter);
+            }
 
             document.getElementById('productCount').textContent = `${filtered.length} Products`;
 
             filtered.forEach((product, index) => {
                 const card = document.createElement('div');
-                card.className = 'product-card fade-in';
+                card.className = 'product-card';
                 card.dataset.tier = product.wholesale === 75 ? 'premium' : 'standard';
-                card.style.animationDelay = `${index * 0.1}s`;
+                card.style.opacity = '1';
 
                 const badgeHtml = product.badge ? `<span class="product-badge badge-${product.badge}">${product.badge}</span>` : '';
                 const imgVersion = product.img === 'MG_1835' ? '1766736925' : '1766736907';
@@ -2551,7 +2564,11 @@
             const btn = e.target;
             const productId = parseInt(btn.dataset.productId);
             const qtyInput = btn.parentElement.querySelector('.qty-input');
-            const qty = parseInt(qtyInput.value);
+            let qty = parseInt(qtyInput.value) || 20;
+
+            // Enforce multiples of 20, minimum 20
+            qty = Math.max(20, Math.round(qty / 20) * 20);
+            qtyInput.value = qty;
 
             const product = products.find(p => p.id === productId);
             const existingItem = cart.find(item => item.id === productId);
@@ -2565,6 +2582,15 @@
             updateCart();
             openCart();
         }
+
+        // Enforce multiples of 20 on qty input blur
+        document.addEventListener('change', function(e) {
+            if (e.target.classList.contains('qty-input')) {
+                let val = parseInt(e.target.value) || 20;
+                val = Math.max(20, Math.round(val / 20) * 20);
+                e.target.value = val;
+            }
+        });
 
         // UPDATE CART
         function updateCart() {
