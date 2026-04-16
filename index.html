@@ -260,13 +260,30 @@
         .hero::before {
             content: '';
             position: absolute;
-            width: 600px;
-            height: 600px;
-            background: radial-gradient(circle, rgba(151, 201, 75, 0.15) 0%, transparent 70%);
-            top: 50%;
-            right: 100px;
-            transform: translateY(-50%);
+            inset: 0;
+            background: url('https://d8j0ntlcm91z4.cloudfront.net/user_361JrGCbk1FnTsDrG1fiO0DicRY/hf_20260416_135117_aba17312-492b-4d0d-a026-c0e25a2e5606.png') center/cover no-repeat;
+            opacity: 0.35;
             pointer-events: none;
+        }
+
+        .hero::after {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background: linear-gradient(90deg, rgba(10,10,10,0.95) 0%, rgba(10,10,10,0.6) 50%, rgba(10,10,10,0.3) 100%);
+            pointer-events: none;
+        }
+
+        /* Grain texture overlay */
+        .grain-overlay {
+            position: absolute;
+            inset: 0;
+            opacity: 0.04;
+            pointer-events: none;
+            z-index: 1;
+            background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='1'/%3E%3C/svg%3E");
+            background-repeat: repeat;
+            background-size: 256px 256px;
         }
 
         .hero-content {
@@ -326,6 +343,30 @@
         .btn-primary:hover {
             transform: translateY(-2px);
             box-shadow: 0 2px 4px rgba(0,0,0,0.02), 0 20px 60px rgba(151, 201, 75, 0.4);
+        }
+
+        @keyframes glowPulse {
+            0%, 100% { box-shadow: 0 0 20px rgba(151, 201, 75, 0.3); }
+            50% { box-shadow: 0 0 40px rgba(151, 201, 75, 0.6); }
+        }
+        .cta-section .btn-primary {
+            animation: glowPulse 2.5s ease-in-out infinite;
+        }
+
+        /* Gold shimmer for Premium product cards */
+        @keyframes goldShimmer {
+            0% { border-color: rgba(251, 191, 36, 0.3); }
+            50% { border-color: rgba(251, 191, 36, 0.8); }
+            100% { border-color: rgba(251, 191, 36, 0.3); }
+        }
+        .product-card[data-tier="premium"] {
+            animation: goldShimmer 3s ease-in-out infinite;
+        }
+
+        /* Marching ants for Coming Soon cards */
+        @keyframes marchingAnts {
+            0% { stroke-dashoffset: 0; }
+            100% { stroke-dashoffset: -20; }
         }
 
         .btn-secondary {
@@ -427,8 +468,9 @@
 
         /* WHY INNOVA3D */
         .why-section {
-            background: var(--light);
+            background: linear-gradient(135deg, #f0fad8 0%, var(--light) 40%, #f7f7f7 100%);
             padding: clamp(60px, 10vw, 100px) 0;
+            position: relative;
         }
 
         .why-section h2 {
@@ -443,16 +485,25 @@
         }
 
         .why-card {
-            background: white;
+            background: rgba(255,255,255,0.7);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
             padding: 40px 30px;
             border-radius: 16px;
+            border: 1px solid rgba(151, 201, 75, 0.1);
             box-shadow: 0 2px 4px rgba(0,0,0,0.02), 0 12px 40px rgba(0,0,0,0.06);
-            transition: all 0.3s ease;
+            transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
         }
 
         .why-card:hover {
             transform: translateY(-8px);
             box-shadow: 0 2px 4px rgba(0,0,0,0.02), 0 20px 60px rgba(0,0,0,0.1);
+            border-color: rgba(151, 201, 75, 0.3);
+        }
+
+        .why-card:hover .icon {
+            transform: scale(1.1) rotate(5deg);
+            transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1);
         }
 
         .why-card .icon {
@@ -1147,15 +1198,17 @@
         .cta-section::before {
             content: '';
             position: absolute;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            opacity: 0.03;
-            background-image: 
-                repeating-linear-gradient(0deg, #000, #000 1px, transparent 1px, transparent 2px),
-                repeating-linear-gradient(90deg, #000, #000 1px, transparent 1px, transparent 2px);
-            background-size: 4px 4px;
+            inset: 0;
+            background: url('https://d8j0ntlcm91z4.cloudfront.net/user_361JrGCbk1FnTsDrG1fiO0DicRY/hf_20260416_135846_21721a7f-95bf-4927-ab9e-96e7a494acee.png') center/cover no-repeat;
+            opacity: 0.25;
+            pointer-events: none;
+        }
+
+        .cta-section::after {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background: linear-gradient(180deg, rgba(10,10,10,0.85) 0%, rgba(10,10,10,0.7) 50%, rgba(10,10,10,0.9) 100%);
             pointer-events: none;
         }
 
@@ -1668,7 +1721,8 @@
 
     <!-- HERO -->
     <section class="hero" id="hero">
-        <div class="container" style="display: grid; grid-template-columns: 1fr 1fr; gap: 40px; align-items: center; position: relative; z-index: 2;">
+        <div class="grain-overlay"></div>
+        <div class="container" style="display: grid; grid-template-columns: 1fr 1fr; gap: 40px; align-items: center; position: relative; z-index: 3;">
             <div class="hero-content">
                 <div class="hero-badge">New Designs Every Week</div>
                 <h1>India's #1 Mini Flexi Toys for B2B</h1>
